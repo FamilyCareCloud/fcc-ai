@@ -38,12 +38,31 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 ### 4. API
 
-- `GET /health` — 서버 및 device(cuda/cpu) 상태 확인
-- `POST /transcribe` — multipart/form-data로 오디오 파일(`file`)을 보내면 `{"text": "..."}` 반환
+- `GET /health` — 서버 및 device(cuda/cpu) 상태 확인, 인증 불필요
+- `POST /transcribe` — multipart/form-data로 오디오 파일(`file`)을 보내면 `{"text": "..."}` 반환. `FCC_AI_API_KEY`가 설정되어 있으면 `X-API-Key` 헤더가 일치해야 합니다.
 
 ```bash
-curl -X POST http://localhost:8000/transcribe -F "file=@sample.wav"
+curl -X POST http://localhost:8000/transcribe -F "file=@sample.wav" -H "X-API-Key: $FCC_AI_API_KEY"
 ```
+
+### 5. 배포된 백엔드(AWS Lambda)와 연결하기
+
+이 서버는 GPU가 필요해 로컬에서만 실행합니다. AWS의 fcc-backend가 호출하려면 공인 HTTPS 주소로 터널링해야 합니다. **`FCC_AI_API_KEY`를 반드시 설정**하세요 — 그렇지 않으면 터널 주소를 아는 누구나 이 GPU를 호출할 수 있습니다.
+
+```bash
+# .env에 FCC_AI_API_KEY=<임의의 긴 비밀 문자열> 설정 후 서버 실행
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+# 다른 터미널에서 Cloudflare Tunnel로 공인 URL 발급 (설치: winget install --id Cloudflare.cloudflared)
+cloudflared tunnel --url http://localhost:8000
+```
+
+출력된 `https://xxxx.trycloudflare.com` 형태의 URL을 fcc-backend 저장소의 GitHub 저장소 변수/시크릿에 등록하면(Settings → Secrets and variables → Actions) 다음 배포부터 반영됩니다:
+
+- Variables: `STT_SERVICE_URL` = 위 터널 URL
+- Secrets: `STT_SERVICE_API_KEY` = 위에서 설정한 `FCC_AI_API_KEY`와 동일한 값
+
+Quick Tunnel은 서버를 재시작할 때마다 URL이 바뀝니다. 고정 주소가 필요하면 Cloudflare 계정에 도메인을 연결한 Named Tunnel을 사용하세요.
 
 ## 관련 저장소
 
