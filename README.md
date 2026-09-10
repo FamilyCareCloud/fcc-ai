@@ -10,9 +10,9 @@ Family Care Cloud는 가족이 함께 돌봄 기록을 남기고 다음 보호�
 
 ## 관련 저장소
 
-- 프론트: https://github.com/hy2oni/fcc-frontend
-- 백엔드: https://github.com/hy2oni/fcc-backend
-- AI: https://github.com/hy2oni/fcc-ai
+- 프론트: https://github.com/FamilyCareCloud/fcc-frontend
+- 백엔드: https://github.com/FamilyCareCloud/fcc-backend
+- AI: https://github.com/FamilyCareCloud/fcc-ai
 
 ## 협업
 
