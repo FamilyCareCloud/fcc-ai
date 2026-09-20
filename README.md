@@ -41,6 +41,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 - `GET /health` — 서버 및 device(cuda/cpu) 상태 확인
 - `POST /transcribe` — multipart/form-data로 오디오 파일(`file`)을 보내면 `{"text": "..."}` 반환
 
+`FCC_AI_API_KEY`를 설정하면 `/transcribe`는 같은 값을 담은 `X-API-Key` 헤더를 요구하고, 없거나 다르면 401을 반환합니다(`/health`는 그대로 열려 있습니다). 로컬 개발에서는 비워두면 검사하지 않습니다. **ngrok 등 공인 터널로 노출할 때는 반드시 설정하세요** — 그러지 않으면 GPU 엔드포인트가 인터넷에 그대로 열립니다. fcc-backend에는 같은 값을 `STT_SERVICE_API_KEY`로 넣습니다.
+
 ```bash
 curl -X POST http://localhost:8000/transcribe -F "file=@sample.wav"
 ```

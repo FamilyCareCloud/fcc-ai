@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     base_model: str = "openai/whisper-small"
+    api_key: str = ""
     adapter_path: str = "models/whisper-senior-lora"
     device: str = "cuda"
     language: str = "korean"
