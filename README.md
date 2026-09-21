@@ -44,7 +44,43 @@ fcc-ai/
 │
 └── models/                        # gitignore 처리 - 로컬에 직접 배치
     └── whisper-senior-lora/       # 파인튜닝된 LoRA 어댑터
+        ├── adapter_config.json        # LoRA 설정 (r=16, alpha=32, q_proj/v_proj)
+        ├── adapter_model.safetensors  # 어댑터 가중치 (약 7MB)
+        ├── processor_config.json      # 특징 추출기 설정
+        ├── tokenizer.json             # 토크나이저 (약 4MB)
+        └── tokenizer_config.json
 ```
+
+### 파일별 역할
+
+| 파일 | 역할 |
+|---|---|
+| `app/main.py` | FastAPI 앱 생성, 시작 시 모델 로드(lifespan), `/health`·`/transcribe` 라우트, `X-API-Key` 검증(`hmac.compare_digest`) |
+| `app/config.py` | `pydantic-settings` 기반 설정. `FCC_AI_` 접두사 환경 변수와 `.env`를 읽음 |
+| `app/stt.py` | `Transcriber` 클래스. 모델 로드, 오디오 디코딩, 추론. 모듈 전역 싱글턴(`transcriber`)으로 사용 |
+| `requirements.txt` | 실행에 필요한 패키지 (torch는 GPU 세대에 맞게 별도 설치 권장) |
+| `.env.example` | 환경 변수 템플릿. 복사해서 `.env`로 사용 (`.env`는 gitignore) |
+| `models/` | 모델 가중치. 용량 문제로 git에 올리지 않고 담당자가 직접 전달 |
+
+### 모듈 의존 관계
+
+```
+main.py ──> config.py (settings)
+   │
+   └──────> stt.py ──> config.py (settings)
+                └──> models/whisper-senior-lora (어댑터·토크나이저)
+                └──> openai/whisper-small (베이스 모델, 최초 실행 시 Hugging Face에서 다운로드)
+```
+
+베이스 모델(`openai/whisper-small`, 약 1GB)은 최초 실행 시 인터넷에서 내려받아 캐시에 저장되므로, 첫 기동은 네트워크 상태에 따라 오래 걸릴 수 있습니다.
+
+### 브랜치 구조
+
+| 브랜치 | 용도 |
+|---|---|
+| `main` | 확인된 결과 |
+| `develop` | 개발 통합 브랜치 |
+| `feature/*`, `docs/*` | 작업 브랜치 (develop에서 분기, PR로 병합) |
 
 ## 시스템 구조
 
