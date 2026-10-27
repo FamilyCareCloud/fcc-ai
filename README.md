@@ -1,3 +1,11 @@
+> **FCC 보존 저장소 — 운영 배포 없음**
+>
+> 이 저장소는 CareBridge 기능 추가 이전의 Family Care Cloud 코드를 보존합니다.
+> 보존 기준: `eeed8d3e4c2634613452b3a0c8a7b98ae72cc1da`. 원본 그대로의 스냅샷은 [fcc-preserved-2026-10-28](https://github.com/FamilyCareCloud/fcc-ai/tree/fcc-preserved-2026-10-28) 태그에 있습니다.
+> 현재 개발과 기존 배포 연결은 [FamilyCareCloud/carebridge-ai](https://github.com/FamilyCareCloud/carebridge-ai)에서 이어갑니다.
+> Actions는 비활성화되어 있으며 운영 Secret·배포 연결을 복제하지 않았습니다. 아래의 과거 배포 주소·명령은 당시 기록입니다.
+
+---
 # fcc-ai - Family Care Cloud AI 서버
 
 노인 명령어 음성 인식(STT) GPU 마이크로서비스
